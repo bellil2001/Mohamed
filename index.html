@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>أسئلة مقززة</title>
+
+  <style>
+    :root{
+      --paper:#fdf6e3;
+      --ink:#222;
+      --muted:#555;
+      --card:rgba(255,255,255,.92);
+      --border:#d6cfc0;
+      --shadow: 0 18px 50px rgba(0,0,0,.18);
+
+      /* فقط أخضر + بني */
+      --accent:#22c55e;
+      --accent2:#7c4a12;
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:Tahoma, Arial;
+
+      background:
+        repeating-linear-gradient(
+          0deg,
+          rgba(0,0,0,.04) 0px,
+          rgba(0,0,0,.04) 2px,
+          transparent 2px,
+          transparent 30px
+        ),
+        radial-gradient(circle at 20% 30%, rgba(34,197,94,.25), transparent 55%),
+        radial-gradient(circle at 80% 70%, rgba(124,74,18,.25), transparent 60%),
+        linear-gradient(180deg, #fff8dc, #fef3c7);
+
+      overflow:hidden;
+    }
+
+    /* doodles sale */
+    .doodles{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.65;
+    }
+    .doodles span{
+      position:absolute;
+      font-size:28px;
+      transform:rotate(var(--r));
+    }
+
+    .wrap{
+      width:min(720px, 96vw);
+      z-index:2;
+    }
+
+    .card{
+      background:var(--card);
+      border:2px solid var(--border);
+      box-shadow:var(--shadow);
+      border-radius:22px;
+      padding:28px;
+      text-align:center;
+    }
+
+    .q{
+      font-size:26px;
+      font-weight:900;
+      margin-bottom:12px;
+    }
+
+    .hint{
+      font-size:15px;
+      color:var(--muted);
+    }
+
+    .btns{
+      margin-top:20px;
+      display:flex;
+      justify-content:center;
+      gap:14px;
+      flex-wrap:wrap;
+      min-height:90px;
+      position:relative;
+    }
+
+    button{
+      border:0;
+      padding:12px 20px;
+      border-radius:14px;
+      font-size:16px;
+      font-weight:900;
+      cursor:pointer;
+      min-width:120px;
+      transition:.15s;
+    }
+
+    .yes{
+      background:linear-gradient(180deg, var(--accent), #15803d);
+      color:white;
+    }
+
+    .no{
+      background:linear-gradient(180deg, var(--accent2), #3b2408);
+      color:white;
+    }
+
+    .no.flee{
+      position:absolute;
+    }
+
+    img{
+      max-width:100%;
+      border-radius:18px;
+      margin-top:14px;
+      border:3px solid #aaa;
+      box-shadow:0 0 20px rgba(0,0,0,.15);
+    }
+
+    .belowText{
+      margin-top:10px;
+      font-size:18px;
+      font-weight:bold;
+      color:#3b2408;
+    }
+
+    iframe{
+      width:100%;
+      height:340px;
+      border-radius:18px;
+      margin-top:18px;
+      border:2px solid #bbb;
+    }
+
+    .hidden{display:none;}
+  </style>
+</head>
+
+<body>
+
+<!-- doodles -->
+<div class="doodles" id="doodles"></div>
+
+<div class="wrap">
+  <div class="card">
+
+    <div id="screenQuestion">
+      <div class="q" id="qText"></div>
+      <p class="hint" id="qHint"></p>
+
+      <div class="btns" id="btnArea">
+        <button class="yes" id="btnYes">نعم</button>
+        <button class="no" id="btnNo">لا</button>
+      </div>
+
+      <div id="imgBox" class="hidden">
+        <img id="creatureImg" src="">
+        <div class="belowText" id="belowText"></div>
+      </div>
+    </div>
+
+    <div id="screenResult" class="hidden">
+      <div class="q">💩 النهاية القذرة...</div>
+      <iframe id="yt" src="" allowfullscreen></iframe>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* doodles أكثر قذارة */
+const doodles=document.getElementById("doodles");
+const icons=["💩","🦠","🗑️","💨","🧦","🤢","🪳","🪰","🥴"];
+for(let i=0;i<35;i++){
+  const s=document.createElement("span");
+  s.textContent=icons[Math.floor(Math.random()*icons.length)];
+  s.style.left=Math.random()*100+"vw";
+  s.style.top=Math.random()*100+"vh";
+  s.style.setProperty("--r",(Math.random()*60-30)+"deg");
+  doodles.appendChild(s);
+}
+
+/* Questions */
+const steps=[
+  {
+    q:"هل تريد معرفة أكثر إنسان رائحة ساقيه كريهة ؟",
+    hint:"😈",
+    fleeNo:true,
+    onYes:1,
+    onNo:1
+  },
+
+  {
+    q:"هذا الانسان يدعى بأنه مهندس و لكنه في الحقيقة بمثابة يوسف في رقوج 😷\nهل بدأت بمعرفته ؟",
+    hint:"💩",
+    fleeNo:true,
+    onYes:2,
+    onNo:2
+  },
+
+  {
+    q:"أنه هذا الكائن الأشد اتساخا في العالم 🤢",
+    hint:"",
+    fleeNo:true,
+    showImg:true,
+    onYes:3,
+    onNo:3
+  },
+
+  {
+    q:"يلا نقوم بحملة قوم جك سنيك يا عافن 💀",
+    hint:"",
+    fleeNo:false,
+    onYes:"VIDEO",
+    onNo:"VIDEO"
+  }
+];
+
+const imgURL="https://scontent.ftun14-1.fna.fbcdn.net/v/t39.30808-6/487027273_9468900956533818_7049124511867892575_n.jpg";
+const videoID="YUSdhziDxS8";
+
+/* Elements */
+const qText=document.getElementById("qText");
+const qHint=document.getElementById("qHint");
+const btnYes=document.getElementById("btnYes");
+const btnNo=document.getElementById("btnNo");
+const btnArea=document.getElementById("btnArea");
+
+const imgBox=document.getElementById("imgBox");
+const creatureImg=document.getElementById("creatureImg");
+const belowText=document.getElementById("belowText");
+
+const screenQuestion=document.getElementById("screenQuestion");
+const screenResult=document.getElementById("screenResult");
+const yt=document.getElementById("yt");
+
+let current=0;
+
+function setStep(i){
+  current=i;
+  const s=steps[i];
+
+  qText.textContent=s.q;
+  qHint.textContent=s.hint;
+
+  imgBox.classList.add("hidden");
+
+  btnNo.classList.remove("flee");
+
+  if(s.fleeNo){
+    btnNo.classList.add("flee");
+    moveNo();
+  }
+
+  if(s.showImg){
+    imgBox.classList.remove("hidden");
+    creatureImg.src=imgURL;
+    belowText.textContent="💩 لمعرفة المزيد 💩";
+  }
+}
+
+function moveNo(){
+  if(!steps[current].fleeNo) return;
+
+  const areaRect=btnArea.getBoundingClientRect();
+  const x=Math.random()*(areaRect.width-120);
+  const y=Math.random()*55;
+
+  btnNo.style.left=x+"px";
+  btnNo.style.top=y+"px";
+}
+
+function showVideo(){
+  screenQuestion.classList.add("hidden");
+  screenResult.classList.remove("hidden");
+  yt.src="https://www.youtube.com/embed/"+videoID+"?autoplay=1";
+}
+
+btnYes.onclick=()=>{
+  const s=steps[current];
+  if(typeof s.onYes==="number") setStep(s.onYes);
+  else showVideo();
+};
+
+btnNo.onclick=()=>{
+  const s=steps[current];
+  if(s.fleeNo){
+    moveNo();
+    return;
+  }
+  if(typeof s.onNo==="number") setStep(s.onNo);
+  else showVideo();
+};
+
+btnNo.onmouseenter=moveNo;
+
+setStep(0);
+</script>
+
+</body>
+</html>
